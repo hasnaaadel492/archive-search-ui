@@ -21,8 +21,8 @@ export default function Header({ onOpenHelp }) {
           onClick={onOpenHelp}
           className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-medium px-3.5 py-2 rounded-lg border border-white/20 transition cursor-pointer"
         >
-          <span aria-hidden="true">؟</span>
           <span>مساعدة الباحث</span>
+          <span aria-hidden="true">؟</span>
         </button>
       </div>
     </header>
