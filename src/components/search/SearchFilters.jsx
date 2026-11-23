@@ -12,32 +12,48 @@ export default function SearchFilters({
   onFilterChange,
   onReset,
 }) {
+  const currentYear = new Date().getFullYear();
+
+  const activeFiltersCount = [
+    filters.category !== 'all',
+    Boolean(filters.issueNumber?.trim()),
+    Boolean(String(filters.year || '').trim()),
+    filters.searchScope !== 'all',
+  ].filter(Boolean).length;
+
   return (
     <div className="mt-4 pt-4 border-t border-slate-200 space-y-4">
-      {/* أزرار اختيار التصنيف السريع */}
-      <div>
-        <span className="block text-xs font-semibold text-slate-600 mb-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="text-xs font-semibold text-slate-600">
           تصنيف الوثائق:
         </span>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((cat) => {
-            const isSelected = filters.category === cat.id;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => onFilterChange('category', cat.id)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition cursor-pointer border ${
-                  isSelected
-                    ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
-                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
-                }`}
-              >
-                {cat.label}
-              </button>
-            );
-          })}
-        </div>
+
+        {activeFiltersCount > 0 && (
+          <span className="text-xs font-medium bg-blue-50 text-[var(--color-primary)] border border-blue-200 px-2.5 py-0.5 rounded-full">
+            فلاتر مفعّلة: {activeFiltersCount}
+          </span>
+        )}
+      </div>
+
+      {/* أزرار اختيار التصنيف السريع */}
+      <div className="flex flex-wrap gap-2">
+        {categories.map((cat) => {
+          const isSelected = filters.category === cat.id;
+          return (
+            <button
+              key={cat.id}
+              type="button"
+              onClick={() => onFilterChange('category', cat.id)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition cursor-pointer border ${
+                isSelected
+                  ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
+                  : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+              }`}
+            >
+              {cat.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* حقول التصفية التفصيلية */}
@@ -48,11 +64,12 @@ export default function SearchFilters({
           </label>
           <input
             type="text"
+            dir="ltr"
             value={filters.issueNumber}
             onChange={(e) => onFilterChange('issueNumber', e.target.value)}
             maxLength={30}
-            placeholder="مثال: 5420"
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[var(--color-primary)] focus:outline-none"
+            placeholder="5420"
+            className="w-full text-right rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[var(--color-primary)] focus:outline-none"
           />
         </div>
 
@@ -62,12 +79,13 @@ export default function SearchFilters({
           </label>
           <input
             type="number"
+            dir="ltr"
             min="1900"
-            max="2099"
+            max={currentYear}
             value={filters.year}
             onChange={(e) => onFilterChange('year', e.target.value)}
-            placeholder="مثال: 2024"
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[var(--color-primary)] focus:outline-none"
+            placeholder={String(currentYear)}
+            className="w-full text-right rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[var(--color-primary)] focus:outline-none"
           />
         </div>
 
@@ -90,7 +108,8 @@ export default function SearchFilters({
           <button
             type="button"
             onClick={onReset}
-            className="w-full rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs sm:text-sm py-2.5 px-4 transition cursor-pointer"
+            disabled={activeFiltersCount === 0}
+            className="w-full rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 disabled:opacity-45 disabled:hover:bg-rose-50 text-rose-700 font-semibold text-xs sm:text-sm py-2.5 px-4 transition cursor-pointer"
           >
             تفريغ الحقول
           </button>

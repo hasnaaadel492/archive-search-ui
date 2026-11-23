@@ -67,6 +67,9 @@ export default function HelpModal({ isOpen, onClose }) {
               تُعرض أعداد الجريدة الرسمية في قائمة متسلسلة مرتبة من <strong>الأقدم إلى الأحدث</strong> لتسهيل تتبع التسلسل التاريخي للأعداد.
             </p>
           </div>
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-600">
+            <strong>اختصارات سريعة:</strong> اضغط <kbd className="px-1.5 py-0.5 bg-white border border-slate-300 rounded">Enter</kbd> داخل حقل البحث لتنفيذ البحث فوراً، واضغط <kbd className="px-1.5 py-0.5 bg-white border border-slate-300 rounded">Esc</kbd> لإغلاق هذه النافذة.
+          </div>
         </div>
 
         <div className="bg-slate-50 px-6 py-3.5 border-t border-slate-200 flex justify-end">

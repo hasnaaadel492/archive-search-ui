@@ -1,8 +1,5 @@
 import { useMemo } from 'react';
 
-/**
- * ترتيب أعداد الجريدة الرسمية تصاعدياً من الأقدم إلى الأحدث
- */
 function sortIssuesOldestFirst(issues = []) {
   return [...issues].sort((a, b) => {
     const numA = Number(a.issueNumber ?? a.number);
@@ -18,7 +15,12 @@ function sortIssuesOldestFirst(issues = []) {
   });
 }
 
-export default function GazetteList({ issues = [], onSelectIssue }) {
+export default function GazetteList({
+  issues = [],
+  isLoading = false,
+  selectedIssueNumber = '',
+  onSelectIssue,
+}) {
   const orderedIssues = useMemo(() => sortIssuesOldestFirst(issues), [issues]);
 
   return (
@@ -31,43 +33,66 @@ export default function GazetteList({ issues = [], onSelectIssue }) {
           </p>
         </div>
         <span className="text-xs bg-white/15 px-2.5 py-1 rounded-md">
-          {orderedIssues.length} عدد
+          {isLoading ? '...' : `${orderedIssues.length} عدد`}
         </span>
       </div>
 
-      {!orderedIssues.length ? (
+      {isLoading ? (
+        <div className="p-5 space-y-3">
+          {[1, 2, 3, 4].map((row) => (
+            <div key={row} className="animate-pulse flex justify-between items-center py-2 border-b border-slate-100 last:border-b-0">
+              <div className="space-y-1.5 w-1/2">
+                <div className="h-3.5 bg-slate-200 rounded w-3/4" />
+                <div className="h-2.5 bg-slate-100 rounded w-1/2" />
+              </div>
+              <div className="h-3 bg-slate-200 rounded w-16" />
+            </div>
+          ))}
+        </div>
+      ) : !orderedIssues.length ? (
         <div className="p-6 text-center text-xs sm:text-sm text-slate-500">
           ستظهر هنا قائمة أعداد الجريدة الرسمية مرتبة من الأقدم إلى الأحدث فور توفر البيانات من الخادم.
         </div>
       ) : (
         <ul className="divide-y divide-slate-100 max-h-[520px] overflow-y-auto">
-          {orderedIssues.map((issue, index) => (
-            <li
-              key={issue.id ?? issue.issueNumber ?? index}
-              className="px-5 py-3.5 hover:bg-slate-50 transition flex items-center justify-between gap-3"
-            >
-              <div>
-                <p className="text-sm font-bold text-slate-800">
-                  العدد رقم: {issue.issueNumber ?? issue.number ?? '-'}
-                </p>
-                {issue.date && (
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    تاريخ الصدور: {issue.date}
-                  </p>
-                )}
-              </div>
+          {orderedIssues.map((issue, index) => {
+            const currentNum = String(issue.issueNumber ?? issue.number ?? '');
+            const isSelected = selectedIssueNumber && selectedIssueNumber === currentNum;
 
-              {onSelectIssue && (
-                <button
-                  type="button"
-                  onClick={() => onSelectIssue(issue)}
-                  className="text-xs font-semibold text-[var(--color-primary)] hover:underline shrink-0 cursor-pointer"
-                >
-                  تصفية بالعدد
-                </button>
-              )}
-            </li>
-          ))}
+            return (
+              <li
+                key={issue.id ?? currentNum ?? index}
+                className={`px-5 py-3.5 transition flex items-center justify-between gap-3 ${
+                  isSelected ? 'bg-blue-50/80' : 'hover:bg-slate-50'
+                }`}
+              >
+                <div>
+                  <p className="text-sm font-bold text-slate-800">
+                    العدد رقم: {currentNum || '-'}
+                  </p>
+                  {issue.date && (
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      تاريخ الصدور: {issue.date}
+                    </p>
+                  )}
+                </div>
+
+                {onSelectIssue && (
+                  <button
+                    type="button"
+                    onClick={() => onSelectIssue(issue)}
+                    className={`text-xs font-semibold shrink-0 cursor-pointer ${
+                      isSelected
+                        ? 'text-blue-700 underline'
+                        : 'text-[var(--color-primary)] hover:underline'
+                    }`}
+                  >
+                    {isSelected ? 'محدد حالياً' : 'تصفية بالعدد'}
+                  </button>
+                )}
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>

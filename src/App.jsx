@@ -21,8 +21,10 @@ export default function App() {
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(true);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
+  
   const [results, setResults] = useState([]);
   const [issues, setIssues] = useState([]);
+  const [isIssuesLoading, setIsIssuesLoading] = useState(true);
   const [hasSearched, setHasSearched] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -32,8 +34,9 @@ export default function App() {
     totalCount: 0,
   });
 
-  useEffect(() => {
+ useEffect(() => {
     let isMounted = true;
+    setIsIssuesLoading(true);
 
     archiveService
       .getGazetteIssues()
@@ -44,6 +47,9 @@ export default function App() {
       })
       .catch(() => {
         // يُترك فارغاً لحين توفر الـ API أو عودة السيرفر
+      })
+      .finally(() => {
+        if (isMounted) setIsIssuesLoading(false);
       });
 
     return () => {
@@ -149,10 +155,12 @@ export default function App() {
           </div>
 
           <aside className="lg:col-span-4">
-            <GazetteList
-              issues={issues}
-              onSelectIssue={handleSelectIssueFromGazette}
-            />
+           <GazetteList
+    issues={issues}
+    isLoading={isIssuesLoading}
+    selectedIssueNumber={filters.issueNumber}
+    onSelectIssue={handleSelectIssueFromGazette}
+  />
           </aside>
         </div>
       </main>
